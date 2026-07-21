@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OT Cybersecurity Assessment Tool — Sale Fish Marketing and Consulting</title>
+<meta name="description" content="Web-based OT/ICS cybersecurity maturity assessment tool. Assess against NIST SP 800-82, IEC 62443, or TSA Security Directives, cross-referenced to NIST CSF 2.0. Supports multi-site portfolio rollups.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="status-bar">
+  <div class="brand">
+    <span class="brand-dot"></span>
+    <div>
+      <div class="brand-title">OT Cybersecurity Assessment Tool</div>
+      <div class="brand-text">Sale Fish Marketing and Consulting</div>
+    </div>
+  </div>
+  <div class="readouts">
+    <div class="readout"><span class="rlabel">Site</span><span class="rvalue" id="sb-site">—</span></div>
+    <div class="readout"><span class="rlabel">Standard</span><span class="rvalue" id="sb-standard">—</span></div>
+    <div class="readout"><span class="rlabel">Mode</span><span class="rvalue" id="sb-mode">—</span></div>
+  </div>
+</div>
+
+<div class="privacy-strip">
+  <span>&#128274; All data stays in your browser. Nothing is sent to a server.</span>
+  <span class="qb-version" id="qb-version-tag"></span>
+</div>
+
+<div class="app-shell">
+
+  <!-- ================= MANAGER / DASHBOARD SCREEN ================= -->
+  <section id="screen-manager" class="screen active">
+    <div class="panel">
+      <div class="panel-header">
+        <div><span class="panel-eyebrow">Portfolio</span><h2>Site Assessments</h2></div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-secondary" id="btn-import-json">Import Data (.json)</button>
+          <button class="btn btn-secondary" id="btn-export-all-json">Export All (.json)</button>
+          <button class="btn btn-primary" id="btn-new-assessment">+ New Assessment</button>
+        </div>
+      </div>
+      <input type="file" id="file-import" accept=".json" style="display:none;">
+
+      <div class="table-scroll">
+      <table class="data-table" id="manager-table">
+        <thead><tr><th style="width:28px;"></th><th>Site</th><th>Organization</th><th>Industry</th><th>Standard</th><th>Mode</th><th>Status</th><th>Updated</th><th></th></tr></thead>
+        <tbody id="manager-table-body"></tbody>
+      </table>
+      </div>
+      <p id="manager-empty-note" style="color:var(--text-secondary); display:none;">No assessments yet. Click "New Assessment" to begin.</p>
+    </div>
+
+    <div class="btn-row split">
+      <span style="color:var(--text-secondary); font-size:13px; align-self:center;" id="portfolio-select-hint">Select 2+ completed assessments above to build a portfolio rollup.</span>
+      <button class="btn btn-primary" id="btn-view-portfolio" disabled>View Portfolio Rollup &rarr;</button>
+    </div>
+  </section>
+
+  <!-- ================= SETUP SCREEN ================= -->
+  <section id="screen-setup" class="screen">
+    <div class="panel">
+      <div class="panel-header"><div><span class="panel-eyebrow">Assessment Details</span><h2>Site & Assessor Information</h2></div></div>
+      <div class="field-grid">
+        <label class="field">Site / Facility Name
+          <input type="text" id="input-site-name" placeholder="e.g., Baytown Refinery, Unit 3">
+        </label>
+        <label class="field">Organization
+          <input type="text" id="input-org-name" placeholder="e.g., Acme Energy Corp.">
+        </label>
+        <label class="field">Assessor Name
+          <input type="text" id="input-assessor-name" placeholder="e.g., J. Rivera">
+        </label>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header"><div><span class="panel-eyebrow">Step 1</span><h2>Select Industry</h2></div></div>
+      <div class="option-grid" id="industry-grid"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header"><div><span class="panel-eyebrow">Step 2</span><h2>Select Standard</h2></div></div>
+      <div class="option-grid" id="standard-grid"></div>
+      <div class="note-box" id="tsa-note" style="display:none;">
+        TSA Security Directives are a mandatory regulatory obligation specifically for designated gas and hazardous liquid pipeline operators. You can still assess any industry against this standard for benchmarking purposes, but it is not a compliance requirement outside pipeline operators.
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header"><div><span class="panel-eyebrow">Step 3</span><h2>Select Assessment Depth</h2></div></div>
+      <div class="option-grid" id="mode-grid"></div>
+    </div>
+
+    <div class="btn-row split">
+      <button class="btn btn-secondary" id="btn-setup-cancel">&larr; Back to Dashboard</button>
+      <button class="btn btn-primary" id="btn-start" disabled>Begin Assessment &rarr;</button>
+    </div>
+  </section>
+
+  <!-- ================= ASSESSMENT SCREEN ================= -->
+  <section id="screen-assessment" class="screen">
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <span id="progress-label" style="font-family:var(--font-mono); font-size:12px; color:var(--text-secondary);"></span>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-ghost" id="btn-edit-details">Edit site details</button>
+        <button class="btn btn-ghost" id="btn-save-exit">Save &amp; exit to dashboard</button>
+      </div>
+    </div>
+    <div class="family-nav" id="family-nav"></div>
+
+    <div class="panel" id="question-container"></div>
+
+    <div class="btn-row split">
+      <button class="btn btn-secondary" id="btn-prev-family">&larr; Previous Family</button>
+      <button class="btn btn-primary" id="btn-next-family">Next Family &rarr;</button>
+    </div>
+  </section>
+
+  <!-- ================= RESULTS SCREEN (single site) ================= -->
+  <section id="screen-results" class="screen">
+    <div class="panel">
+      <div class="panel-header">
+        <div><span class="panel-eyebrow">Executive View</span><h2 id="results-title">Assessment Results</h2></div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-secondary" id="btn-edit-details-results">Edit site details</button>
+          <button class="btn btn-secondary" id="btn-back-to-dashboard">Dashboard</button>
+        </div>
+      </div>
+
+      <div class="gauge-wrap">
+        <div id="gauge-container"></div>
+        <div class="kpi-row" style="flex:1;">
+          <div class="kpi-card"><div class="kpi-label">Overall Maturity</div><div class="kpi-value cyan" id="kpi-overall">—</div><div class="kpi-label" id="kpi-overall-label"></div></div>
+          <div class="kpi-card"><div class="kpi-label">Risk-Weighted</div><div class="kpi-value amber" id="kpi-weighted">—</div></div>
+          <div class="kpi-card"><div class="kpi-label">Industry Baseline</div><div class="kpi-value" id="kpi-baseline">—</div></div>
+          <div class="kpi-card"><div class="kpi-label">Risks Identified</div><div class="kpi-value red" id="kpi-risk-count">—</div></div>
+        </div>
+      </div>
+
+      <div class="na-toggle-row">
+        <span class="panel-eyebrow" style="margin:0;">N/A Handling</span>
+        <label><input type="radio" name="na-mode" value="exclude" checked> Exclude N/A from average</label>
+        <label><input type="radio" name="na-mode" value="zero"> Treat N/A as 0</label>
+        <span id="na-count-note" style="color:var(--text-muted); font-size:12px;"></span>
+      </div>
+
+      <div class="btn-row split" style="margin-top:16px;">
+        <span></span>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-secondary" id="btn-export-csv">Export Raw Data (.csv)</button>
+          <button class="btn btn-secondary" id="btn-export-json">Export Progress (.json)</button>
+          <button class="btn btn-primary" id="btn-export">Export Report (.doc)</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="tab-row">
+        <button class="tab-btn active" data-tab="exec">Executive Summary</button>
+        <button class="tab-btn" data-tab="charts">Charts</button>
+        <button class="tab-btn" data-tab="detail">Detail Table</button>
+        <button class="tab-btn" data-tab="risks">All Risks</button>
+        <button class="tab-btn" data-tab="top10">Top 10 Risks</button>
+        <button class="tab-btn" data-tab="appendix">Full Q&amp;A Appendix</button>
+      </div>
+
+      <div class="tab-panel active" id="tab-exec">
+        <div id="exec-summary-text"></div>
+      </div>
+
+      <div class="tab-panel" id="tab-charts">
+        <h3>Control Family Maturity</h3>
+        <div class="chart-wrap"><canvas id="chart-family"></canvas></div>
+        <h3>NIST CSF 2.0 Function Rollup</h3>
+        <div class="chart-wrap"><canvas id="chart-csf"></canvas></div>
+        <h3>Maturity vs. Industry Baseline</h3>
+        <div class="chart-wrap"><canvas id="chart-baseline"></canvas></div>
+      </div>
+
+      <div class="tab-panel" id="tab-detail">
+        <table class="data-table">
+          <thead><tr><th>ID</th><th>Control Family</th><th>CSF 2.0 Cross-Reference</th><th>CTRL Reference</th><th>Score</th><th>CMM Level</th></tr></thead>
+          <tbody id="detail-table-body"></tbody>
+        </table>
+      </div>
+
+      <div class="tab-panel" id="tab-risks">
+        <p id="risk-empty-note" style="color:var(--text-secondary); display:none;">No significant risks identified — all scored items are above the risk threshold.</p>
+        <table class="data-table">
+          <thead><tr><th>Level</th><th>Family</th><th>Item</th><th>Score</th><th>Priority</th><th>Recommended Action</th></tr></thead>
+          <tbody id="risk-table-body"></tbody>
+        </table>
+      </div>
+
+      <div class="tab-panel" id="tab-top10">
+        <div id="top10-container"></div>
+      </div>
+
+      <div class="tab-panel" id="tab-appendix">
+        <table class="data-table">
+          <thead><tr><th>Family</th><th>Question</th><th>Score</th><th>Notes</th></tr></thead>
+          <tbody id="appendix-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PORTFOLIO ROLLUP SCREEN ================= -->
+  <section id="screen-portfolio" class="screen">
+    <div class="panel">
+      <div class="panel-header">
+        <div><span class="panel-eyebrow">Multi-Site Rollup</span><h2>Portfolio Results</h2></div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-secondary" id="btn-portfolio-back">Dashboard</button>
+          <button class="btn btn-primary" id="btn-export-portfolio">Export Portfolio Report (.doc)</button>
+        </div>
+      </div>
+      <div class="kpi-row">
+        <div class="kpi-card"><div class="kpi-label">Sites Included</div><div class="kpi-value cyan" id="pf-site-count">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Combined Maturity (avg)</div><div class="kpi-value amber" id="pf-overall">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Highest-Risk Site</div><div class="kpi-value" id="pf-worst-site" style="font-size:16px;">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Total Risks (all sites)</div><div class="kpi-value red" id="pf-risk-count">—</div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Maturity by Site</h3>
+      <div class="chart-wrap"><canvas id="chart-portfolio-sites"></canvas></div>
+    </div>
+
+    <div class="panel">
+      <h3>Site Comparison Table</h3>
+      <table class="data-table">
+        <thead><tr><th>Site</th><th>Industry</th><th>Standard</th><th>Overall Maturity</th><th>CMM Level</th><th>Risks Identified</th></tr></thead>
+        <tbody id="portfolio-table-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
+
+<script src="js/vendor/chart.umd.js"></script>
+<script src="data/questions.js"></script>
+<script src="data/cmm-levels.js"></script>
+<script src="js/gauge.js"></script>
+<script src="js/app.js"></script>
+<script src="js/export-doc.js"></script>
+</body>
+</html>
