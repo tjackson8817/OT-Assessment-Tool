@@ -1,0 +1,225 @@
+{
+  "assessments": {
+    "site_sample_riverside": {
+      "id": "site_sample_riverside",
+      "siteName": "Riverside Production Facility",
+      "orgName": "Meridian Chemical Solutions",
+      "assessorName": "T. Jackson, Sale Fish Marketing and Consulting",
+      "industry": "Chemical",
+      "standard": "IEC_62443",
+      "mode": "long",
+      "responses": {
+        "FR1": {
+          "scores": [
+            3,
+            2,
+            2
+          ],
+          "notes": "Operators share two HMI logins per shift; engineering accounts are individual. Domain accounts for EWS only."
+        },
+        "FR2": {
+          "scores": [
+            2,
+            3,
+            1
+          ],
+          "notes": "USB ports disabled on HMIs, but the two engineering laptops are unrestricted."
+        },
+        "FR3": {
+          "scores": [
+            2,
+            2,
+            1
+          ],
+          "notes": "No logic-change detection. Firmware is downloaded from vendor portals without signature checks."
+        },
+        "FR4": {
+          "scores": [
+            2,
+            1,
+            "NA"
+          ],
+          "notes": "No cloud services in use (FR4 Q3 marked N/A). Historian shares process data with corporate by file transfer."
+        },
+        "FR5": {
+          "scores": [
+            2,
+            2,
+            1
+          ],
+          "notes": "Flat control network: Lines 1–3, SIS engineering and historian share one VLAN. Firewall to corporate is 'any-any' for 10.20.0.0/16."
+        },
+        "FR6": {
+          "scores": [
+            1,
+            1,
+            3
+          ],
+          "notes": "No OT network monitoring. IR plan exists (corporate IT plan) and was used in the September tabletop."
+        },
+        "FR7": {
+          "scores": [
+            2,
+            2,
+            3
+          ],
+          "notes": "PLC backups taken ad hoc by the controls engineer; last full restore test unknown."
+        }
+      },
+      "naMode": "exclude",
+      "currentFamilyIndex": 6,
+      "setupComplete": true,
+      "createdAt": "2026-10-20T14:00:00.000Z",
+      "updatedAt": "2026-10-20T19:30:00.000Z",
+      "completedAt": "2026-10-20T19:30:00.000Z"
+    },
+    "site_sample_bayport": {
+      "id": "site_sample_bayport",
+      "siteName": "Bayport Distribution Terminal",
+      "orgName": "Meridian Chemical Solutions",
+      "assessorName": "T. Jackson, Sale Fish Marketing and Consulting",
+      "industry": "Chemical",
+      "standard": "NIST_800_82",
+      "mode": "long",
+      "responses": {
+        "AC": {
+          "scores": [
+            3,
+            3,
+            4
+          ],
+          "notes": "Remote vendor access through CyberArk with approval workflow; RBAC on the terminal SCADA."
+        },
+        "IA": {
+          "scores": [
+            4,
+            3,
+            2
+          ],
+          "notes": "MFA on all remote access since 2025. Device certificates not used (Modbus/TCP only)."
+        },
+        "SC": {
+          "scores": [
+            4,
+            3,
+            "NA"
+          ],
+          "notes": "Industrial DMZ in place; conduit rules reviewed annually. No SIS at this site (SC Q3 marked N/A)."
+        },
+        "SI": {
+          "scores": [
+            3,
+            2,
+            3
+          ],
+          "notes": ""
+        },
+        "AU": {
+          "scores": [
+            3,
+            2,
+            2
+          ],
+          "notes": "Passive monitoring sensor at the DMZ boundary only; alerts go to the corporate SOC with generic rules."
+        },
+        "IR": {
+          "scores": [
+            3,
+            3,
+            2
+          ],
+          "notes": "Reporting obligations are handled by Legal after the fact, not built into the playbook."
+        },
+        "CP": {
+          "scores": [
+            3,
+            2,
+            3
+          ],
+          "notes": ""
+        },
+        "CM": {
+          "scores": [
+            3,
+            3,
+            2
+          ],
+          "notes": "Asset inventory last reconciled 2024. No patch test environment."
+        }
+      },
+      "naMode": "exclude",
+      "currentFamilyIndex": 7,
+      "setupComplete": true,
+      "createdAt": "2026-10-22T14:00:00.000Z",
+      "updatedAt": "2026-10-22T19:30:00.000Z",
+      "completedAt": "2026-10-22T19:30:00.000Z"
+    },
+    "site_sample_lakecharles": {
+      "id": "site_sample_lakecharles",
+      "siteName": "Lake Charles Pipeline Station",
+      "orgName": "Meridian Midstream LLC",
+      "assessorName": "T. Jackson, Sale Fish Marketing and Consulting",
+      "industry": "O&G",
+      "standard": "TSA_GAS",
+      "mode": "long",
+      "responses": {
+        "SEG": {
+          "scores": [
+            4,
+            3
+          ],
+          "notes": "Segmentation architecture documented in the TSA-approved CIP; one undocumented cellular modem found on the metering skid."
+        },
+        "ACC": {
+          "scores": [
+            4,
+            3
+          ],
+          "notes": "MFA enforced on VPN and PAM. Session recording on, but recordings aren't reviewed."
+        },
+        "PATCH": {
+          "scores": [
+            3,
+            2
+          ],
+          "notes": "Risk-based patching documented; compensating controls not recorded for the 14 deferred items."
+        },
+        "MON": {
+          "scores": [
+            3,
+            3
+          ],
+          "notes": ""
+        },
+        "IRPT": {
+          "scores": [
+            3,
+            2
+          ],
+          "notes": "CIRP still references the 24-hour window; needs updating for SD Pipeline-2021-01G (72 hours)."
+        },
+        "CIP": {
+          "scores": [
+            4,
+            3
+          ],
+          "notes": ""
+        },
+        "TPA": {
+          "scores": [
+            2,
+            2
+          ],
+          "notes": "Architectural design review overdue (last performed 2024). Assessment findings tracked in a spreadsheet with no owners."
+        }
+      },
+      "naMode": "exclude",
+      "currentFamilyIndex": 6,
+      "setupComplete": true,
+      "createdAt": "2026-10-27T14:00:00.000Z",
+      "updatedAt": "2026-10-27T19:30:00.000Z",
+      "completedAt": "2026-10-27T19:30:00.000Z"
+    }
+  },
+  "activeId": "site_sample_lakecharles"
+}

@@ -1,5 +1,7 @@
 # OT Cybersecurity Assessment Tool
 
+**[Open the live tool →](https://tjackson8817.github.io/OT-Assessment-Tool/)** · Version 1.1 (November 2026) · Question bank v2.1.0
+
 A free, web-based OT/ICS cybersecurity maturity self-assessment tool. No build step, no backend, no dependencies to install — open `index.html` in a browser or host it on GitHub Pages. Fully self-contained: Chart.js is vendored locally, so the tool works even with no internet connection (fonts will gracefully fall back to system fonts offline).
 
 **Built by Sale Fish Marketing and Consulting.**
@@ -8,12 +10,12 @@ A free, web-based OT/ICS cybersecurity maturity self-assessment tool. No build s
 
 ## What it does
 
-- Assess OT cybersecurity maturity against **NIST SP 800-82r3**, **IEC 62443**, or **TSA Security Directives (Gas Pipeline)** — all cross-referenced to **NIST CSF 2.0**.
+- Assess OT cybersecurity maturity against **NIST SP 800-82r3**, **IEC 62443**, or the **TSA Pipeline Security Directives** — all cross-referenced to **NIST CSF 2.0**.
 - Two assessment depths: **Short** (control-family level) and **Long** (detailed, multiple sub-questions per family).
 - **N/A support** — mark a question as Not Applicable, and choose (per assessment, adjustable live on the results screen) whether N/A items are excluded from the average or counted as 0.
 - Select your **industry** (Power & Utilities, Oil & Gas, Chemical, Manufacturing, Healthcare) for illustrative baseline comparison.
 - **Multi-site portfolio support** — run independent assessments for multiple sites/facilities, then build a combined rollup view and export a portfolio report alongside individual per-site reports.
-- Scoring uses the standard **CMM 1-5** maturity model (Initial → Optimizing).
+- Scoring uses the standard **CMM 1-5** maturity model (Initial → Optimizing). The level shown for an average is the level fully reached (rounded down), so 2.9 reads "Managed", not "Defined".
 - Notes/evidence field per control family, and assessor/organization/site fields captured with every assessment.
 - An executive dashboard: overall maturity gauge, risk-weighted score, NIST CSF 2.0 function rollup (radar chart), industry baseline comparison, and a prioritized Top 10 Risks list with recommended remediation actions.
 - **CTRL ID traceability** — every control family cross-references the CTRL-x.x.x IDs from the companion "OT Cybersecurity Technical Reference" document, so findings here can be traced back to that document's detailed guidance.
@@ -24,6 +26,8 @@ A free, web-based OT/ICS cybersecurity maturity self-assessment tool. No build s
 - On-screen privacy notice: all data stays in the browser, nothing is sent to a server.
 
 ## Quick start
+
+**Try the samples.** Click **Import (.json)** and choose `samples/Assessment_Samples_Import_Me.json`: three completed sites (IEC 62443, NIST SP 800-82r3 and TSA), ready for a portfolio rollup. See `samples/README.md`.
 
 **Option 1 — just open it.** Double-click `index.html`. Everything runs client-side, fully offline-capable (Chart.js is bundled locally).
 
@@ -54,6 +58,7 @@ js/gauge.js             Custom SVG analog gauge (the maturity score dial)
 js/app.js               Multi-assessment state management, navigation, scoring, chart rendering
 js/export-doc.js        Generates Word-compatible .doc exports (single-site and portfolio rollup)
 js/vendor/chart.umd.js  Chart.js, vendored locally for offline use (MIT licensed, see js/vendor/CHART.JS.LICENSE.md)
+samples/                Sample assessments, reports (.doc and PDF), raw-data CSV and screenshots
 ```
 
 External dependencies:
@@ -66,13 +71,26 @@ The control families in `data/questions.js` are a **representative, foundational
 
 - **NIST SP 800-82r3** — a representative subset of NIST SP 800-53 control families as tailored for OT (Access Control, Identification & Authentication, System & Communications Protection, System & Information Integrity, Audit & Accountability, Incident Response, Contingency Planning, Configuration Management).
 - **IEC 62443** — the 7 Foundational Requirements (FR1–FR7) defined in IEC 62443-3-3.
-- **TSA Security Directives** — the core requirement areas of the pipeline Security Directive series (segmentation, MFA, patch management, monitoring, incident reporting, governance, third-party assessment). This reflects the **gas pipeline** directive series specifically.
+- **TSA Pipeline Security Directives** — the core requirement areas of the Pipeline-2021-01 and -02 directive series (segmentation, MFA, patch management, monitoring, incident reporting, the Cybersecurity Implementation Plan and governance, and the Cybersecurity Assessment Program). These directives apply to TSA-designated natural gas and hazardous liquid pipeline and LNG owner/operators; rail and transit directives are not modeled.
 
 This is a **maturity self-assessment tool**, not a substitute for a full, formal control-by-control audit against the complete standard text by an accredited assessor. The current question bank version is stamped in the tool's header strip and in every exported report.
 
 **Industry baseline maturity figures** are **illustrative planning estimates** based on general sector regulatory-pressure trends, not empirical survey data.
 
 **This tool is complementary to, not a replacement for, the companion Excel-based risk register.** This tool measures *program/control maturity* (how mature is your access control practice, broadly); the companion workbook's Risk Register tracks *specific named risk scenarios* (Likelihood × Consequence for a particular vulnerability or threat). Use both together — CTRL ID cross-references in this tool's question bank tie back to the same IDs used in the companion Word document and workbook.
+
+## What's new in v1.1 (November 2026)
+
+- **Fixed: blank charts in the Word report.** The report captured the on-screen charts while they were still animating, so bars and radar data were missing, and the dark-theme titles were invisible on a white page. Report charts are now drawn separately: white background, dark text, no animation.
+- **Fixed: charts cut off after six families.** The 0–5 limit was applied to the category axis as well as the score axis, so NIST's CP and CM and IEC's FR7 never appeared in any chart.
+- **Fixed: maturity level rounded up.** An average of 1.5 was labelled "Managed"; levels now show the level fully reached.
+- **Fixed: changing depth (Short ↔ Detailed) carried answers to the wrong questions.** The tool now warns and clears scores (notes are kept).
+- **Fixed:** cancelling a new assessment left a blank "(unnamed site)" row; a damaged or older import could break the Dashboard.
+- **CSF chart:** plots only the functions a standard covers; IEC 62443 (which maps to Protect and Detect only) gets a bar chart that shows which functions aren't covered.
+- **TSA content:** renamed "TSA Pipeline Security Directives" (it covered hazardous liquid pipelines all along); reporting help updated to 72 hours (SD Pipeline-2021-01G); the assessment family now matches the Cybersecurity Assessment Program, including the architectural design review.
+- **CSF 2.0 labels corrected:** Audit & Accountability → DE.CM; Patch & Vulnerability Management → ID.RA; Implementation Plan / Governance → GV.RR; Cybersecurity Assessment Program → ID.IM.
+- Results show how many questions are still unanswered; industry names are spelled out; CSV exports are protected against spreadsheet formula injection.
+- Family IDs are unchanged, so assessments saved with v1.0 still load.
 
 ## N/A handling
 
